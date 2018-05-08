@@ -2,6 +2,8 @@
 
 This is a starfield screensaver.
 
+![Starfield screensaver example](https://github.com/chris-bacon/harfield/harfield.gif)
+
 ## Usage 
 
 There are several ways to run. 
