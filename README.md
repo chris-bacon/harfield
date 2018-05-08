@@ -2,7 +2,7 @@
 
 This is a starfield screensaver.
 
-![Starfield screensaver example](https://github.com/chris-bacon/harfield/harfield.gif)
+![Starfield screensaver example](https://github.com/chris-bacon/harfield/blob/master/harfield.gif)
 
 ## Usage 
 
