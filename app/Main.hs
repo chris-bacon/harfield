@@ -1,7 +1,8 @@
 module Main where
 
 import Graphics.Gloss
-import Graphics.Gloss.Interface.IO.Animate
+import Graphics.Gloss.Data.ViewPort
+import Graphics.Gloss.Interface.IO.Simulate
 import System.Random
 import System.Environment
 
@@ -40,24 +41,23 @@ render (Starfield a) = do
     stars <- mapM renderStar a
     pure $ pictures stars
 
-offScreen :: Star -> Bool
-offScreen star
-  | x star > (width / 2) - 10 = True
-  | y star > height / 2 = True
-  | x star < (-(width / 2)) = True
-  | y star < (-(height / 2)) = True
+offScreen :: Star -> Float -> Bool
+offScreen star time
+  | x star * time >= (width / 2) = True
+  | y star * time >= (height / 2) = True
+  | x star * time <= (-(width / 2)) = True
+  | y star * time <= (-(height / 2)) = True
   | otherwise = False
 
 moveStar :: Float -> Star -> IO Star
 moveStar time star = 
-    if offScreen star
-        then (createStar (MaxSpeed 20)) 
-        else pure $ Star (x star + xrate) (y star + yrate) (z star) 
+    if offScreen star time
+        then createStar $ MaxSpeed 20
+        else pure $ Star (x star + vx) (y star + vy) (z star) 
             where
-                xrate = ((x star) - centerX) * (z star) * time / 10 -- ^ The further from the centre the faster it gets
-                yrate = ((y star) - centerY) * (z star) * time / 10 -- ^ Ditto
-                centerX = 0
-                centerY = 0
+                vx = ((x star) - center) * (z star) * time / 10 -- ^ The further from the centre the faster it gets
+                vy = ((y star) - center) * (z star) * time / 10 -- ^ Ditto
+                center = 0
 
 moveStars :: Float -> Starfield -> IO Starfield
 moveStars time (Starfield a) = do
@@ -70,18 +70,20 @@ initialState numStars maxSpeed = do
     pure $ Starfield stars
 
 --f :: Controller -> IO ()
-f = const $ return ()
+--f = const $ return ()
 
 main :: IO ()
 main = do
     args <- getArgs
-    let numStars = 5000
+    let numStars = 50
         maxSpeed = MaxSpeed $ read (args !! 0)
     stars <- initialState numStars maxSpeed
-    animateIO window background (frame stars) f
-        where
-            frame :: Starfield -> Float -> IO Picture
-            frame stars seconds = do
-                stars <- moveStars seconds stars
-                render stars
+    simulateIO window background 60 stars render update
+--        where
+--            frame :: Starfield -> IO Picture
+--            frame stars = do
+--                stars <- moveStars stars
+--                render stars
 
+update :: ViewPort -> Float -> Starfield -> IO Starfield
+update _ = moveStars
