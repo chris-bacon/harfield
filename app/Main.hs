@@ -69,21 +69,17 @@ initialState numStars maxSpeed = do
     stars <- sequence $ take numStars $ repeat $ createStar maxSpeed
     pure $ Starfield stars
 
---f :: Controller -> IO ()
---f = const $ return ()
-
 main :: IO ()
 main = do
     args <- getArgs
-    let numStars = 50
-        maxSpeed = MaxSpeed $ read (args !! 0)
-    stars <- initialState numStars maxSpeed
-    simulateIO window background 60 stars render update
---        where
---            frame :: Starfield -> IO Picture
---            frame stars = do
---                stars <- moveStars stars
---                render stars
+    case args of
+        ["--num", num] -> do
+            let numStars = read (num) :: Int 
+                fps      = 60
+                maxSpeed = MaxSpeed 10
+            stars <- initialState numStars maxSpeed
+            simulateIO window background fps stars render update
+        _ -> print "Please supply --num <num>"
 
 update :: ViewPort -> Float -> Starfield -> IO Starfield
 update _ = moveStars
