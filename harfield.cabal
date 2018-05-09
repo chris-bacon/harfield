@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: b12602fb4758f96554aadfd728b395eee3a011379ff6209e8db4bf4f69baedeb
+-- hash: c9762a4c99ae8e39ea16337ee39b79a321aa838a6b876762ac4a6b83b8951472
 
 name:           harfield
 version:        0.1.0.0
@@ -29,7 +29,7 @@ executable harfield-exe
   main-is: Main.hs
   hs-source-dirs:
       app
-  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N -O2
   build-depends:
       base >=4.7 && <5
     , gloss
