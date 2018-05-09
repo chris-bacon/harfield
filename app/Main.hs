@@ -21,7 +21,7 @@ width = 1024
 height = 800
 
 window :: Display
-window = InWindow "Starfield" (round width, round height) (10, 10)
+window = FullScreen
 
 background :: Color
 background = black
