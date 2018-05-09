@@ -21,13 +21,13 @@ width = 1024
 height = 800
 
 window :: Display
-window = InWindow "Starfield" (1024, 800) (10, 10)
+window = InWindow "Starfield" (round width, round height) (10, 10)
 
 background :: Color
 background = black
 
-renderStar :: Star -> IO Picture
-renderStar star = pure $ translate (x star) (y star) $ color white $ circleSolid 1
+renderStar :: Star -> Picture
+renderStar star = translate (x star) (y star) $ color white $ circleSolid 1
 
 createStar :: MaxSpeed -> IO Star
 createStar (MaxSpeed maxSpeed) = do
@@ -36,10 +36,8 @@ createStar (MaxSpeed maxSpeed) = do
     z <- randomRIO (1, maxSpeed)
     pure $ Star x y z
 
-render :: Starfield -> IO Picture
-render (Starfield a) = do
-    stars <- mapM renderStar a
-    pure $ pictures stars
+render :: Starfield -> Picture
+render (Starfield a) = pictures $ renderStar <$> a
 
 offScreen :: Star -> Float -> Bool
 offScreen star time
@@ -65,9 +63,7 @@ moveStars time (Starfield a) = do
     pure $ Starfield newStars
 
 initialState :: Int -> MaxSpeed -> IO Starfield
-initialState numStars maxSpeed = do
-    stars <- sequence $ take numStars $ repeat $ createStar maxSpeed
-    pure $ Starfield stars
+initialState numStars maxSpeed = Starfield . take numStars . repeat <$> createStar maxSpeed
 
 main :: IO ()
 main = do
@@ -78,7 +74,7 @@ main = do
                 fps      = 60
                 maxSpeed = MaxSpeed 10
             stars <- initialState numStars maxSpeed
-            simulateIO window background fps stars render update
+            simulateIO window background fps stars (pure . render) update
         _ -> print "Please supply --num <num>"
 
 update :: ViewPort -> Float -> Starfield -> IO Starfield
